@@ -27,7 +27,8 @@ f'对话列表' # search and the least 20 chat logs related to the sender
 ```
 
 ```python
-f'继承对话 {sessionID}' # copy a session from anyone's history chat log, and continue chating under the copied session.
+f'继承对话 {sessionID}' # 1.copy a session from anyone's history chat log。
+                       # 2.continue chating under the copied session.
 ```
 
 ```python
