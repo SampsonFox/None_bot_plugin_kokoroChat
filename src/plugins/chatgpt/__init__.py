@@ -25,7 +25,8 @@ loopCount = 0
 global_config = get_driver().config
 config = Config.parse_obj(global_config)
 
-gpthelp_kokoro = on_command("gpthelp_kokoro", aliases={"gpt帮助"}, priority=80, block=True) # 帮助
+gpthelp_kokoro_zh = on_command("gpthelp_kokoro", aliases={"gpt帮助"}, priority=70, block=True) # 帮助zh
+gpthelp_kokoro_en = on_command("gpthelp_kokoro", aliases={"gpt help"}, priority=71, block=True) # 帮助en
 
 findsessions_kokoro = on_command("findsessions_kokoro",rule=to_me(), aliases={"对话列表"}, priority=90, block=True) # 查找所有和此用户有关的对话
 sessionDetail_kokoro = on_command("sessionDetail_kokoro",rule=to_me(), aliases={"查看对话"}, priority=91, block=True) # 查看特定对话
@@ -80,6 +81,14 @@ async def handle_func(event: Union[GroupMessageEvent, PrivateMessageEvent], bot:
 
     elif  len(str(res)) >= 50:
         resjson = [
+            {
+                "type": "node",
+                "data": {
+                    "name": event.sender.nickname,
+                    "uin": event.sender.user_id,
+                    "content": str(event.message)
+                }
+            },
             {
                 "type": "node",
                 "data": {
@@ -236,6 +245,115 @@ async def handle_func(event: Union[GroupMessageEvent, PrivateMessageEvent], bot:
     await gptobject.getpresetList()
 
     # await preset_list_kokoro.finish(str(res), at_sender=True)
+
+'''帮助'''
+
+@gpthelp_kokoro_zh.handle()
+async def handle_func(event: Union[GroupMessageEvent, PrivateMessageEvent], bot: Bot, gpthelp_kokoro_zh: gpthelp_kokoro_zh):
+
+    '''帮助'''
+
+    name = '==调教助手=='
+
+    resjson = [
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": 'Kokoro-ChatGPT 帮助'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '聊天请直接私聊或者在群聊中@kokoro'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '结束对话 ：结束当前对话并返回对话ID'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '查看对话 对话ID ：查看相应对话详情'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '对话列表 ： 查看和发送人有关的最近20个对话'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '继承对话 对话ID ： 复制对话，在新的对话中继续聊天'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '纯净模式 ： 不使用预设开启对话，可以用于生成预设'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '预设列表 ： 查看所有现有预设'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '生成预设 对话ID 预设名称 ： 将ID对应的对话转化为预设，并且为预设起一个预设名字以供调用，对话ID和预设名称之间要用空格隔开'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '使用预设 预设名称： 和继承对话类似'
+            }
+        },
+        {
+            "type": "node",
+            "data": {
+                "name": name,
+                "uin": bot.self_id,
+                "content": '本项目Github地址：https://github.com/SampsonFox/None_bot_plugin_kokoroChat'
+            }
+        },
+
+    ]
+
+
+    if event.message_type == 'private':
+        await bot.call_api("send_private_forward_msg", user_id=event.user_id, messages=resjson)
+
+    elif event.message_type == 'group':
+        await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=resjson)
+
 
 _sub_plugins = set()
 _sub_plugins |= nonebot.load_plugins(
